@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор заказа AI-визуалов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0A2540;
+    color: #E6EDF6;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 460px;
+    background: #0E2A4A;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 32px 28px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #7EE0A3;
+    background: rgba(126, 224, 163, 0.1);
+    border: 1px solid rgba(126, 224, 163, 0.25);
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #9DB3CC;
+    margin-bottom: 28px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #C6D5E6;
+    margin-bottom: 8px;
+  }
+
+  .field { margin-bottom: 20px; }
+
+  .checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #C6D5E6;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+
+  .checkbox input {
+    width: 18px;
+    height: 18px;
+    accent-color: #3D7BFF;
+    cursor: pointer;
+  }
+
+  select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background: #123458 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23AFC3D8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    color: #E6EDF6;
+    font-family: inherit;
+    font-size: 15px;
+    padding: 14px 44px 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  select:hover { border-color: rgba(255, 255, 255, 0.25); }
+  select:focus {
+    outline: none;
+    border-color: #4E9FE0;
+    box-shadow: 0 0 0 3px rgba(78, 159, 224, 0.2);
+  }
+
+  select option {
+    background: #123458;
+    color: #E6EDF6;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 8px;
+    background: #3D7BFF;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+
+  button:hover { background: #2E68E0; }
+  button:active { transform: scale(0.99); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .result {
+    display: none;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeUp 0.35s ease;
+  }
+
+  .result.show { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .total-label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #9DB3CC;
+    margin-bottom: 4px;
+  }
+
+  .total {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #7EE0A3;
+    margin-bottom: 8px;
+  }
+
+  .formula {
+    font-size: 13px;
+    color: #9DB3CC;
+    margin-bottom: 20px;
+  }
+
+  .order-text {
+    font-size: 13px;
+    color: #C6D5E6;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+  }
+
+  .order-text a { color: #7EB6FF; text-decoration: none; }
+  .order-text a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">AI-визуалы</div>
+    <h1>Калькулятор заказа</h1>
+    <p class="subtitle">Выберите услугу и срок — посчитаем стоимость</p>
+
+    <form id="calcForm" novalidate>
+      <div class="field">
+        <label for="service">Услуга</label>
+        <select id="service" required>
+          <option value="" disabled selected>Выберите услугу</option>
+          <option value="1000">1 визуал (базовый) — 1 000 ₽</option>
+          <option value="1500">1 визуал (с правками) — 1 500 ₽</option>
+          <option value="4000">Серия из 5 визуалов (единый стиль) — 4 000 ₽</option>
+          <option value="8500">Серия из 10 визуалов (единый стиль) — 8 500 ₽</option>
+          <option value="2000">Пост (текст + визуал) — 2 000 ₽</option>
+          <option value="8000">Контент-план на месяц (10 постов) — 8 000 ₽</option>
+        </select>
+      </div>
+
+      <label class="checkbox">
+        <input type="checkbox" id="adapt">
+        <span>Добавить адаптацию под соцсеть (+500 ₽)</span>
+      </label>
+
+      <div class="field">
+        <label for="deadline">Срок</label>
+        <select id="deadline" required>
+          <option value="" disabled selected>Выберите срок</option>
+          <option value="1">Завтра-послезавтра (базовая цена)</option>
+          <option value="1.5">Сегодня (+50%)</option>
+          <option value="2">1-2 часа (+100%)</option>
+          <option value="0.8">Неделя (-20%)</option>
+        </select>
+      </div>
+
+      <button type="submit">Рассчитать стоимость</button>
+    </form>
+
+    <div id="result" class="result">
+      <div class="total-label">Итого</div>
+      <div class="total" id="total">—</div>
+      <div class="formula" id="formula"></div>
+      <div class="order-text">
+        Чтобы заказать, напишите мне в Telegram: <a href="#" id="tg">[твой контакт]</a> или на почту: <a href="mailto:ai.vizualy@gmail.com">ai.vizualy@gmail.com</a>
+      </div>
+    </div>
+  </div>
+
+<script>
+  (function () {
+    var form = document.getElementById('calcForm');
+    var serviceEl = document.getElementById('service');
+    var deadlineEl = document.getElementById('deadline');
+    var adaptEl = document.getElementById('adapt');
+    var resultEl = document.getElementById('result');
+    var totalEl = document.getElementById('total');
+    var formulaEl = document.getElementById('formula');
+
+    var SERVICE_LABELS = {
+      '1000': '1 000 ₽',
+      '1500': '1 500 ₽',
+      '4000': '4 000 ₽',
+      '8500': '8 500 ₽',
+      '2000': '2 000 ₽',
+      '8000': '8 000 ₽'
+    };
+
+    var DEADLINE_LABELS = {
+      '1': '1',
+      '1.5': '1.5',
+      '2': '2',
+      '0.8': '0.8'
+    };
+
+    function formatPrice(n) {
+      return n.toLocaleString('ru-RU').replace(/\u00a0/g, ' ') + ' ₽';
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var svc = serviceEl.value;
+      var dln = deadlineEl.value;
+
+      if (!svc || !dln) return;
+
+      var base = parseInt(svc, 10);
+      var mult = parseFloat(dln);
+      var total = Math.round(base * mult);
+      var baseLabel = SERVICE_LABELS[svc];
+      var multLabel = DEADLINE_LABELS[dln];
+
+      var formula = baseLabel + ' × ' + multLabel + ' = ' + formatPrice(total);
+
+      if (adaptEl.checked) {
+        total += 500;
+        formula += '<br>+ Адаптация: 500 ₽';
+      }
+
+      totalEl.textContent = formatPrice(total);
+      formulaEl.innerHTML = formula;
+
+      resultEl.classList.remove('show');
+      void resultEl.offsetWidth;
+      resultEl.classList.add('show');
+    });
+  })();
+</script>
+</body>
+</html>
